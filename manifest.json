@@ -4,7 +4,7 @@
 	"version": "0.4.0",
 	"minAppVersion": "0.15.0",
 	"description": "Updated fork of Tasks Calendar Wrapper, showing Obsidian tasks in a timeline with quick entry, search, counters, and safer task parsing.",
-	"author": "zhuwenq, Des",
-	"authorUrl": "https://github.com/destiny911",
+	"author": "zhuwenq",
+	"authorUrl": "https://github.com/SoulBits-Vibe",
 	"isDesktopOnly": false
 }

@@ -59,4 +59,6 @@ The plugin id remains `tasks-calendar-wrapper` so existing installs can update w
 
 Original plugin by [Leonezz](https://github.com/Leonezz).
 
+If this update helped you, you can support the work on [Ko-fi](https://ko-fi.com/soulbits).
+
 This fork also vendors the small timeline source that was previously included as a submodule, so compatibility fixes can live in one repository.
