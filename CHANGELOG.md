@@ -2,7 +2,7 @@
 
 ## 0.4.0
 
-First public revival release maintained from this fork. Most fixes in this release were guided by issues reported against the original plugin.
+First public update release from this fork. Most fixes in this release were guided by issues reported against the original plugin.
 
 ### Fixed
 

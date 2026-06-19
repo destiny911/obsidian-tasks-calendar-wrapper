@@ -257,7 +257,8 @@ class TimelineControls extends React.Component {
                             placeholder='Search tasks'
                             type='search'
                             value={searchQuery}
-                            onChange={handleSearchChange}
+                            onInput={handleSearchChange}
+                            onKeyUp={handleSearchChange}
                         />
                     </div>
                 </div>
@@ -314,7 +315,7 @@ class FolderGroupingToggle extends React.Component {
     }
 }
 
-class QuickEntry extends React.Component<Record<string, unknown>> {
+export class QuickEntry extends React.Component<Record<string, unknown>> {
     private textInput;
     private okButton;
     private quickEntryPanel;

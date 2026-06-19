@@ -3,7 +3,7 @@
 	"name": "Tasks Calendar Wrapper",
 	"version": "0.4.0",
 	"minAppVersion": "0.15.0",
-	"description": "Community-maintained revival of Tasks Calendar Wrapper, showing Obsidian tasks in a timeline with quick entry, search, counters, and safer task parsing.",
+	"description": "Updated fork of Tasks Calendar Wrapper, showing Obsidian tasks in a timeline with quick entry, search, counters, and safer task parsing.",
 	"author": "zhuwenq, Des",
 	"authorUrl": "https://github.com/destiny911",
 	"isDesktopOnly": false

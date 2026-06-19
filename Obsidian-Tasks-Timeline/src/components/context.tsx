@@ -20,7 +20,7 @@ export const UserOptionContext = React.createContext({
     groupByFolder: false as boolean,
     controlsOpen: false as boolean,
     searchQuery: "" as string,
-    handleSearchChange: (_event: React.ChangeEvent<HTMLInputElement>) => { },
+    handleSearchChange: (_event: React.FormEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>) => { },
 });
 
 export const QuickEntryHandlerContext = React.createContext({

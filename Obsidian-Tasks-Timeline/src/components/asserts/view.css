@@ -667,4 +667,4 @@
 .taskido.overdueFilter .task:not(.overdue) { display: none; }
 .taskido.unplannedFilter .year:not([data-types*="unplanned"]) { display: none; }
 .taskido.unplannedFilter .details:not([data-types*="unplanned"]) { display: none; }
-.taskido.unplannedFilter .task:not(.unplanned) { display: none; }
+.taskido.unplannedFilter .details:not(.noDateDetails) .task:not(.unplanned) { display: none; }

@@ -837,6 +837,6 @@ If your plugin does not need CSS, delete this file.
 	display: none;
 }
 
-.taskido.unplannedFilter .task:not(.unplanned) {
+.taskido.unplannedFilter .details:not(.noDateDetails) .task:not(.unplanned) {
 	display: none;
 }

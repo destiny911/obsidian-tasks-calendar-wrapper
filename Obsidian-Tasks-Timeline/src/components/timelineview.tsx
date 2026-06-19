@@ -1,5 +1,6 @@
 import moment from 'moment';
 import * as React from 'react';
+import { getFileTitle } from '../../../dataview-util/dataview';
 import type { UserOption } from '../../../src/settings';
 import * as TaskMapable from '../../../utils/taskmapable';
 import { counterModeClass } from '../../../utils/timelineclasses';
@@ -22,15 +23,24 @@ const defaultTimelineStates = {
 type TimelineProps = Readonly<typeof defaultTimelineProps>;
 type TimelineStates = typeof defaultTimelineStates;
 
+function textIncludesQuery(values: Array<string | undefined>, query: string) {
+    return values
+        .filter((value): value is string => typeof value === "string" && value.length > 0)
+        .join(" ")
+        .toLowerCase()
+        .includes(query);
+}
+
 export function taskMatchesSearch(task: TaskDataModel, searchQuery: string) {
     const query = searchQuery.trim().toLowerCase();
     if (query.length === 0) return true;
 
-    const searchableText = [
+    return textIncludesQuery([
         task.visual,
         task.text,
-        task.path,
+        task.link?.display,
         task.section?.subpath,
+        task.section?.display,
         task.status,
         task.statusMarker,
         task.priority,
@@ -42,12 +52,24 @@ export function taskMatchesSearch(task: TaskDataModel, searchQuery: string) {
         task.completion?.format("YYYY-MM-DD"),
         ...[...task.dates.values()].map(date => date.format("YYYY-MM-DD")),
         ...task.tags,
-    ]
-        .filter((value): value is string => typeof value === "string" && value.length > 0)
-        .join(" ")
-        .toLowerCase();
+    ], query);
+}
 
-    return searchableText.includes(query);
+export function taskMatchesSourceSearch(task: TaskDataModel, searchQuery: string) {
+    const query = searchQuery.trim().toLowerCase();
+    if (query.length === 0) return true;
+
+    return textIncludesQuery([
+        task.path,
+        getFileTitle(task.path),
+        task.link?.path,
+    ], query);
+}
+
+export function filterTasksBySearch(taskList: TaskDataModel[], searchQuery: string) {
+    if (searchQuery.trim().length === 0) return taskList;
+    const directMatches = taskList.filter(task => taskMatchesSearch(task, searchQuery));
+    return directMatches.length > 0 ? directMatches : taskList.filter(task => taskMatchesSourceSearch(task, searchQuery));
 }
 
 export class TimelineView extends React.Component<TimelineProps, TimelineStates> {
@@ -66,7 +88,7 @@ export class TimelineView extends React.Component<TimelineProps, TimelineStates>
 
         this.state = {
             filter: this.props.userOptions.defaultFilters,
-            todayFocus: this.props.userOptions.defaultTodayFocus,
+            todayFocus: this.props.userOptions.defaultFilters ? false : this.props.userOptions.defaultTodayFocus,
             controlsOpen: false,
             searchQuery: "",
         }
@@ -76,11 +98,12 @@ export class TimelineView extends React.Component<TimelineProps, TimelineStates>
         if (previousProps.userOptions.defaultFilters !== this.props.userOptions.defaultFilters) {
             this.setState({
                 filter: this.props.userOptions.defaultFilters,
+                todayFocus: this.props.userOptions.defaultFilters ? false : this.state.todayFocus,
             });
         }
         if (previousProps.userOptions.defaultTodayFocus !== this.props.userOptions.defaultTodayFocus) {
             this.setState({
-                todayFocus: this.props.userOptions.defaultTodayFocus,
+                todayFocus: this.state.filter ? false : this.props.userOptions.defaultTodayFocus,
             });
         }
     }
@@ -89,6 +112,7 @@ export class TimelineView extends React.Component<TimelineProps, TimelineStates>
         if (this.state.filter !== filterName) {
             this.setState({
                 filter: filterName,
+                todayFocus: false,
             })
         } else {
             this.setState({
@@ -98,8 +122,10 @@ export class TimelineView extends React.Component<TimelineProps, TimelineStates>
     }
 
     handleTodayFocus() {
+        const todayFocus = !this.state.todayFocus;
         this.setState({
-            todayFocus: !this.state.todayFocus,
+            todayFocus,
+            filter: todayFocus ? "" : this.state.filter,
         })
     }
 
@@ -108,10 +134,13 @@ export class TimelineView extends React.Component<TimelineProps, TimelineStates>
         searchInput?.focus();
     }
 
-    handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
-        const searchQuery = event.target.value;
+    handleSearchChange(event: React.FormEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>) {
+        const searchQuery = event.currentTarget.value;
+        const hasSearch = searchQuery.trim().length > 0;
         this.setState({
             searchQuery,
+            todayFocus: hasSearch ? false : this.state.todayFocus,
+            filter: hasSearch ? "" : this.state.filter,
         }, () => {
             window.requestAnimationFrame(this.restoreSearchFocus);
             window.setTimeout(this.restoreSearchFocus, 50);
@@ -119,14 +148,16 @@ export class TimelineView extends React.Component<TimelineProps, TimelineStates>
     }
 
     handleToggleControls() {
+        const controlsOpen = !this.state.controlsOpen;
         this.setState({
-            controlsOpen: !this.state.controlsOpen,
+            controlsOpen,
+            searchQuery: controlsOpen ? this.state.searchQuery : "",
         })
     }
 
     render(): React.ReactNode {
         const involvedDates: Set<string> = new Set();
-        const taskList = this.props.taskList.filter(task => taskMatchesSearch(task, this.state.searchQuery));
+        const taskList = filterTasksBySearch(this.props.taskList, this.state.searchQuery);
         const noDateTaskList = taskList.filter(TaskMapable.isUndatedActiveTask);
         const datedTaskList = taskList.filter(t => !TaskMapable.isUndatedActiveTask(t));
         datedTaskList.forEach((t: TaskDataModel) => {

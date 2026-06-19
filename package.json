@@ -1,7 +1,7 @@
 {
 	"name": "tasks-calendar-wrapper",
 	"version": "0.4.0",
-	"description": "Community-maintained revival of Tasks Calendar Wrapper for Obsidian.",
+	"description": "Updated fork of Tasks Calendar Wrapper for Obsidian.",
 	"main": "src/main.ts",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
